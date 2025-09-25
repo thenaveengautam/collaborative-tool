@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ProjectFlow - Collaborative Project Management</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <!-- Auth Screen -->
+      <div id="auth-screen">
+        <div class="auth-container">
+          <h2>Welcome to Collaborative Tool</h2>
+          <p>Collaborative Project Management Made Simple</p>
+
+          <!-- Error and Success Messages -->
+          <div id="authError" class="error-message"></div>
+          <div id="authSuccess" class="success-message"></div>
+
+          <div id="login-form">
+            <div class="form-group">
+              <input
+                type="text"
+                id="login-username"
+                placeholder="Username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                id="login-password"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <button onclick="login()">Sign In</button>
+            <button class="btn-secondary" onclick="showSignup()">
+              Create Account
+            </button>
+          </div>
+
+          <div id="signup-form" style="display: none">
+            <div class="form-group">
+              <input
+                type="text"
+                id="signup-username"
+                placeholder="Username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="email"
+                id="signup-email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                id="signup-password"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <button onclick="signup()">Create Account</button>
+            <button class="btn-secondary" onclick="showLogin()">
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main App -->
+      <div id="main-app" style="display: none">
+        <div class="container">
+          <div class="header">
+            <div class="logo">ProjectFlow</div>
+            <div class="user-info">
+              <div
+                class="notification-badge"
+                onclick="showNotifications()"
+                id="notificationBadge"
+              >
+                0
+              </div>
+              <span id="currentUser"></span>
+              <span class="online-indicator"></span>
+              <button class="btn-secondary" onclick="logout()">Logout</button>
+            </div>
+          </div>
+
+          <div class="main-content">
+            <div class="sidebar">
+              <h3>Projects</h3>
+              <button
+                onclick="showCreateProject()"
+                style="width: 100%; margin-bottom: 20px"
+              >
+                + Create Project
+              </button>
+              <div id="projectList"></div>
+            </div>
+
+            <div class="board-area">
+              <div
+                id="emptyState"
+                style="text-align: center; padding: 100px 20px"
+              >
+                <h3>Select a project to get started</h3>
+                <p>
+                  Create your first project or select an existing one from the
+                  sidebar
+                </p>
+              </div>
+
+              <div id="boardView" style="display: none">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                  "
+                >
+                  <h2 id="currentProjectName"></h2>
+                  <button onclick="showCreateTask()">+ Add Task</button>
+                </div>
+                <div class="board" id="board"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modals -->
+      <!-- Create Project Modal -->
+      <div id="projectModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Create New Project</h3>
+            <span class="close" onclick="closeModal('projectModal')"
+              >&times;</span
+            >
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              id="projectName"
+              placeholder="Project Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <textarea
+              id="projectDescription"
+              placeholder="Project Description"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Team Members (comma-separated usernames):</label>
+            <input
+              type="text"
+              id="projectMembers"
+              placeholder="john, jane, mike"
+            />
+          </div>
+          <button onclick="createProject()">Create Project</button>
+          <button class="btn-secondary" onclick="closeModal('projectModal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Create Task Modal -->
+      <div id="taskModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Create New Task</h3>
+            <span class="close" onclick="closeModal('taskModal')">&times;</span>
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              id="taskTitle"
+              placeholder="Task Title"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <textarea
+              id="taskDescription"
+              placeholder="Task Description"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <select id="taskStatus">
+              <option value="todo">To Do</option>
+              <option value="inprogress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select id="taskPriority">
+              <option value="low">Low Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="high">High Priority</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              id="taskAssignee"
+              placeholder="Assign to (username)"
+            />
+          </div>
+          <div class="form-group">
+            <input type="date" id="taskDueDate" />
+          </div>
+          <button onclick="createTask()">Create Task</button>
+          <button class="btn-secondary" onclick="closeModal('taskModal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Detail Modal -->
+      <div id="taskDetailModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="taskDetailTitle"></h3>
+            <div>
+              <button class="btn-secondary" onclick="editTask()">Edit</button>
+              <button class="btn-danger" onclick="deleteTask()">Delete</button>
+              <span class="close" onclick="closeModal('taskDetailModal')"
+                >&times;</span
+              >
+            </div>
+          </div>
+          <div id="taskDetailContent"></div>
+          <div class="comments-section">
+            <h4>Comments</h4>
+            <div id="taskComments"></div>
+            <div class="form-group" style="margin-top: 15px">
+              <textarea
+                id="newComment"
+                placeholder="Add a comment..."
+                rows="2"
+              ></textarea>
+              <button onclick="addComment()" style="margin-top: 10px">
+                Add Comment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
