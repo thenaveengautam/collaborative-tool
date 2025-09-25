@@ -35,8 +35,6 @@ body {
 .logo {
   font-size: 24px;
   font-weight: bold;
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  -webkit-text-fill-color: transparent;
 }
 
 .user-info {
@@ -176,6 +174,7 @@ button {
   font-size: 16px;
   font-weight: 600;
   transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
 }
 
 button:hover {
