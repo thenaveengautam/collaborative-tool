@@ -25,8 +25,7 @@ It allows multiple users or team members to collaborate, share tasks/notes, and 
 
 ## 📂 Folder Structure
 
----
-
+```
 collaborative-tool/  
 │  
 ├── client/
@@ -42,6 +41,7 @@ collaborative-tool/
 ├── package.json
 ├── package-lock.json
 └── README.md
+```
 
 ---
 
