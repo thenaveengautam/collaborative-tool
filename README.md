@@ -83,9 +83,6 @@ Install Live Server extension in VS Code
 Right-click on index.html
 Select "Open with Live Server"
 
-Using Python
-bashpython -m http.server 8000
-
 # Visit http://localhost:8000
 
 Usage
@@ -111,14 +108,6 @@ Chrome 90+
 Firefox 88+
 Safari 14+
 Edge 90+
-
-Contributing
-
-Fork the repository
-Create your feature branch (git checkout -b feature/new-feature)
-Commit your changes (git commit -m 'Add some feature')
-Push to the branch (git push origin feature/new-feature)
-Open a Pull Request
 
 ---
 
